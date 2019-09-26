@@ -1,0 +1,260 @@
+basic reactive form validation:
+1.reactiveform.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+@Component({
+  selector: 'app-reactiveform',
+  templateUrl: './reactiveform.component.html',
+  styleUrls: ['./reactiveform.component.css']
+})
+export class ReactiveformComponent implements OnInit {
+  registerForm: FormGroup;
+  emails = [{ email: 'emails1' }, { email: 'emails2' }, { email: 'email3' }]
+  constructor(private formBuilder: FormBuilder) {
+  }
+
+  ngOnInit() {
+    this.registerForm = this.formBuilder.group({
+      name: [null, Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      address: this.formBuilder.group({
+        city: ['', Validators.required],
+        state: ['', Validators.required],
+        postalcode: ['', [Validators.required, Validators.minLength(6)]]
+      }),
+      alteremails: this.formBuilder.array([]),
+      other: this.formBuilder.array([this.addOtherSkillFormGroup()]),
+      useremail: this.formBuilder.array([])
+    })
+  }
+  addOtherSkillFormGroup(): FormGroup {
+    return this.formBuilder.group({
+      education: ['', Validators.required],
+      age: ['', Validators.required],
+      degree: ['Bachelor', Validators.required]
+    });
+  }
+
+  addButtonClick() {
+    (<FormArray>this.registerForm.get('other')).push(this.addOtherSkillFormGroup())
+  }
+  deleteRow(index: number) {
+    (<FormArray>this.registerForm.get('other')).removeAt(index);
+  }
+
+  get alteremails(): FormArray { return this.registerForm.get('alteremails') as FormArray; }
+  addalteremailids() {
+    // alert();
+    this.alteremails.push(this.formBuilder.control('', [Validators.required, Validators.email]));
+  }
+  //checkbox
+  onChange(email: string, isChecked: boolean) {
+    let emailFormArray = <FormArray>this.registerForm.controls.useremail;
+
+    if (isChecked) {
+      emailFormArray.push(new FormControl(email));
+    } else {
+      let index = emailFormArray.controls.findIndex(x => x.value == email)
+      emailFormArray.removeAt(index);
+    }
+    console.log(emailFormArray.value);
+    console.log(this.registerForm.value);
+  }
+  //checkbox
+  get f() { return this.registerForm.controls; }
+  onSubmit() {
+    console.log(this.registerForm.value);
+    console.log(this.registerForm.invalid);
+    if (this.registerForm.invalid) {
+      // this.submitted = true
+    }
+    else {
+      alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
+     // this.submitted = false;
+    }
+    console.log(this.registerForm.value);
+
+  }
+  callload() {
+    let val = {
+      name: 'ven',
+      email: "ven.aptc@gmail.com",
+      address: {
+        city: "ff",
+        state: 'dfg',
+        postalcode: '232323'
+      },
+      alteremails: ['fdf@g.com', 'jjjj@gg.com'],
+      other: [{ education: 'edu1', age: '3', degree: 'Bachelor' }, { education: 'edu1', age: '4', degree: 'Master' }],
+      useremail: ['emails1']
+    }
+    this.registerForm.patchValue({
+      name: val.name,
+      email: val.email,
+      address: {
+        city: val.address.city,
+        state: val.address.state,
+        postalcode: val.address.postalcode
+      },
+    })
+    this.registerForm.setControl('alteremails', this.formBuilder.array(val.alteremails || []));
+    this.deleteRow(0);
+    val.other.forEach(x => {
+      console.log(x);
+      (<FormArray>this.registerForm.get('other')).push(this.formBuilder.group({
+
+        education: x.education,
+        age: x.age,
+        degree: x.degree,
+
+      }));
+    })
+    this.registerForm.setControl('useremail', this.formBuilder.array(val.useremail || []));
+    // this.registerForm.value.useremail = val.useremail;
+    //  (<FormArray>this.registerForm.get('other')).push(this.addOtherSkillFormGroup())
+  }
+}
+
+
+2.reactiveform.component.html
+
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit(registerForm.value)">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-3 ">
+                <mat-form-field class="demo-full-width">
+                    <input formControlName="name" matInput placeholder="First Name">
+                </mat-form-field>
+                <mat-error>
+                    <span *ngIf="!registerForm.get('name').valid && registerForm.get('name').touched ">Please enter Name !!!</span>
+                </mat-error>
+            </div>
+            <div class="col-md-3 ">
+                <div class="row">
+
+                    <div class="col-md-10 ">
+                        <mat-form-field class="demo-full-width">
+                            <input formControlName="email" matInput placeholder="Email">
+                        </mat-form-field>
+
+                        <mat-error *ngIf="!registerForm.get('email').valid && registerForm.get('email').touched ">
+                            <span *ngIf="registerForm.get('email').errors?.required ">Please enter Email !!!</span>
+                            <span *ngIf="registerForm.get('email').errors?.email ">Please enter Valid Email Id</span>
+                        </mat-error>
+
+                        <div formArrayName="alteremails" *ngFor="let tt of alteremails.controls;let i = index">
+
+                            <mat-form-field class="demo-full-width">
+                                <input formControlName="{{i}}" matInput placeholder="Alternative Email {{i+1}}">
+                            </mat-form-field>
+                            <mat-error *ngIf="!tt.valid && tt.touched ">
+                                <span *ngIf="tt.errors?.required ">Please enter Alternative Email {{i+1}} !!!</span>
+                                <span *ngIf="tt.errors?.email ">Please enter valid Email {{i+1}} !!!</span>
+                                <!-- <span *ngIf="registerForm.get('email').errors?.email ">Please enter Valid Email Id</span> -->
+                            </mat-error>
+                        </div>
+
+                    </div>
+                    <div class="col-md-2 ">
+                        <a (click)="addalteremailids()" mat-mini-fab aria-label="Example icon-button with a heart icon">
+                            <mat-icon>add</mat-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 " formGroupName="address">
+
+                <mat-form-field class="demo-full-width">
+                    <input formControlName="city" matInput placeholder="City">
+                </mat-form-field>
+
+                <mat-error>
+                    <span *ngIf="!registerForm.get('address.city').valid && registerForm.get('address.city').touched ">Please enter City !!!</span>
+                </mat-error>
+
+            </div>
+            <div class="col-md-3 " formGroupName="address">
+
+                <mat-form-field class="demo-full-width">
+                    <input formControlName="state" matInput placeholder="State">
+                </mat-form-field>
+
+                <mat-error>
+                    <span *ngIf="!registerForm.get('address.state').valid && registerForm.get('address.state').touched ">Please enter State !!!</span>
+                </mat-error>
+
+            </div>
+            <div class="col-md-3 " formGroupName="address">
+
+                <mat-form-field class="demo-full-width">
+                    <input formControlName="postalcode" maxlength="6" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                        matInput placeholder="State">
+                </mat-form-field>
+
+                <mat-error *ngIf="!registerForm.get('address.postalcode').valid && registerForm.get('address.postalcode').touched ">
+                    <span *ngIf="registerForm.get('address.postalcode').errors?.required">Please enter Postalcode !!!</span>
+                    <span *ngIf="registerForm.get('address.postalcode').errors?.minlength"> Please Enter Valid 6 digit Postalcode !!!</span>
+                </mat-error>
+
+            </div>
+            <!-- Important Not angular material <div class="col-md-4 ">
+                <input type="text" formControlName="name" class="form-control"   [class.is-invalid]="registerForm.get('name').invalid && registerForm.get('name').touched "/>
+                <div class="invalid-feedback">
+                    <div [class.d-none]="registerForm.get('name').valid || registerForm.get('name').untouched ">First Name is required</div>
+                </div>
+        </div>  -->
+        <div class="col-md-9" >
+                <button type="button" mat-raised-button color="primary"  (click)="addButtonClick()">  
+                        Add Other Details  
+                    </button>  
+            <div  formArrayName="other" *ngFor="let other of registerForm.get('other').controls; let i = index">
+                <div class="row"  [formGroupName]="i">
+                    <div class="col-md-3">
+                            <mat-form-field class="demo-full-width">
+                                    <input formControlName="education" matInput placeholder="Education">
+                                </mat-form-field>
+                    </div>
+                <div class="col-md-3">
+                        <mat-form-field class="demo-full-width">
+                                <input formControlName="age" matInput placeholder="Age">
+                            </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                        <!-- <mat-form-field class="demo-full-width">
+                        <input formControlName="degree"  matInput placeholder="Degree">
+                    </mat-form-field> -->
+                    
+                    <mat-radio-group formControlName="degree" aria-label="Select an option">
+                            <mat-radio-button  value="Bachelor">Bachelor</mat-radio-button>
+                            <mat-radio-button  value="Master">Master</mat-radio-button>
+                          </mat-radio-group>
+                </div>
+                <div class="col-md-3">
+                        <button type="button" color="warn" *ngIf="registerForm.get('other').controls.length>1" (click)="deleteRow(i)" mat-mini-fab aria-label="icon-button with a heart icon">
+                                <mat-icon>delete</mat-icon>
+                        </button>
+                </div>
+            </div>
+              
+            </div>
+            </div>
+            <div class="col-md-3">
+              <!-- <div *ngFor="let cbItem of cbArr">
+                    <mat-checkbox value="{{cbItem}}"
+                    [checked]="cbChecked.indexOf(cbItem) >= 0"
+                    (change)="updateCheckedOptions(cbItem, $event)">{{cbItem}}</mat-checkbox>
+             </div> -->
+             <div *ngFor="let data of emails">
+                <mat-checkbox value="{{data.email}}" [checked]="registerForm.value.useremail.indexOf(data.email) >= 0" (change)="onChange(data.email, $event.checked)">{{data.email}}</mat-checkbox>
+         </div>
+            </div>
+            <div class="col-md-3 ">
+                <button mat-raised-button color="accent" disabled="{{registerForm.invalid}}" type="submit">Submit</button>
+                <a mat-raised-button color="warn" (click)="callload()">Load Data</a>
+                {{registerForm.value | json}}
+            </div>
+        </div>
+    </div>
+</form>
