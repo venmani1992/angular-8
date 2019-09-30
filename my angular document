@@ -1,0 +1,22 @@
+Add boostrap in angular projects:
+   1  install boostrap:  npm i bootstrap --save
+   2  style.css : @import "~bootstrap/dist/css/bootstrap.css";
+
+Reactive Form:
+   1 without angular material https://jasonwatmore.com/post/2019/06/14/angular-8-reactive-forms-validation-example
+   2 with angular material https://www.c-sharpcorner.com/article/angular-material-design-components-with-reactive-form-part-2/
+
+Add Angular Material Icon in You Project:
+    1 npm install material-design-icons --save
+    2 style.css : @import '~material-design-icons/iconfont/material-icons.css';
+    3 <i class="material-icons">visibility</i>
+
+Communicate parent child relation:
+    https://appdividend.com/2018/01/28/angular-input-output-tutorial-example-scratch/
+    https://www.concretepage.com/angular-2/angular-2-viewchild-example
+
+3rd party library jQWidgets:
+    https://www.jqwidgets.com/angular-components-documentation/
+    
+angular cli commands:
+    https://riptutorial.com/Download/angular-cli.pdf
