@@ -1,0 +1,74 @@
+
+1.Preview PDF/Image file before upload
+
+<form name=f1 method=post enctype="multipart/form-data">
+    <input id="uploadPDF" type="file" name="file"/>&nbsp;
+    <input type="button" value="Preview" onclick="PreviewImage();" />
+
+    <div style="clear:both">
+       <iframe id="viewer" frameborder="0" scrolling="no" width="300" height="200"></iframe>
+    </div>
+    <button type="submit" name="submit" class="btn btn-success btn-sm">
+      <i class="fa fa-dot-circle-o"></i> Add
+    </button>&emsp;
+</form>
+ <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+ 
+ function PreviewImage() {
+    pdffile=document.getElementById("uploadPDF").files[0];
+    pdffile_url=URL.createObjectURL(pdffile);
+    $('#viewer').attr('src',pdffile_url);
+}
+angular:
+PreviewImage() {
+  alert();
+ console.log((<HTMLInputElement>document.getElementById('uploadPDF')).files[0]);
+  let pdffile=(<HTMLInputElement>document.getElementById('uploadPDF')).files[0];
+
+ let pdffile_url=URL.createObjectURL(pdffile);
+  $('iframe').attr('src',pdffile_url);
+}
+
+2.Image uplaod and preview:
+
+  <div class="imgUp">
+      <div class="imagePreview" >
+          <img  [src]="imgURL" width="100%" height="350"  *ngIf="imgURL">
+      </div>
+
+
+   </div>
+   <label class="btn btn-primary">
+    Upload <input style="display: none" class="uploadFile img" value="Upload Photo" #file type="file" accept='image/*' (change)="preview(file.files)" />
+  </label>  <!--<div class="imagePreview"></div><label class="btn btn-primary">Upload<input type="file" class="uploadFile img" value="Upload Photo" style="width:0px;height:0px;overflow:hidden;"></label><i class="fa fa-times del"></i>
+
+
+public imagePath;
+ imgURL: any;
+ location: any;
+ myobj: any = {};
+ public message: string;
+ 
+ preview(files) {
+  console.log(files);
+  console.log(files[0]);
+//  if (files.length === 0)
+//  return;
+
+  let mimeType = files[0].type;
+  if (mimeType.match(/image\/*/)==null ) {
+  this.message = 'Only images are supported.';
+  return;
+} else {
+  this.message = '';
+  this.myobj.file = files[0];
+}
+  let reader = new FileReader();
+  this.imagePath = files;
+  reader.readAsDataURL(files[0]);
+  reader.onload = (_event) => {
+    this.imgURL = reader.result;
+  };
+  console.log(this.imgURL);
+  console.log(reader);
+}
