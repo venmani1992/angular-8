@@ -73,6 +73,7 @@ export class ReactiveformComponent implements OnInit {
       alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value, null, 4));
      // this.submitted = false;
     }
+     this.registerForm.markAllAsTouched();
     console.log(this.registerForm.value);
 
   }
