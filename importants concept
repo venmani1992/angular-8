@@ -289,3 +289,10 @@ let form_data = new FormData();
 			//console.log(this.model);
 		}
 	 }
+ 5.DATEPIPE(ANGULAR 7)	 
+
+     import { DatePipe } from '@angular/common';
+	  
+     constructor(public datepipe: DatePipe){}
+	  
+     this.model.event_date = this.datepipe.transform(this.event_date1, 'yyyy-MM-dd HH:mm:ss');
