@@ -1,0 +1,19 @@
+1. Rxjs error:
+
+Error: Can't resolve 'rxjs/add/operator/map';
+
+solution:
+https://stackoverflow.com/questions/50845983/error-cant-resolve-rxjs-add-operator-map/50849872
+
+
+2.'ng' is not recognized as an internal or external command,
+operable program or batch file. error
+
+solution:
+npm install -g @angular/cli@latest
+
+
+3. npm ERR! 503 No backends available - GET https://registry.npmjs.org/after/-/after-0.8.2.tgz/source-map error
+
+ solution:
+  npm config set registry https://registry.npmjs.org/
