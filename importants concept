@@ -1,0 +1,242 @@
+
+Image uplaod and preview:
+1.html:
+<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 form-fields form-fields">
+	<mat-label>Pan ID Proof</mat-label>
+	<div class="fw-100">
+		<div class="avatar-upload">
+			<div class="avatar-edit">
+				<input type='file' id="pan_imageUpload"   name="pan_id_proof" [(ngModel)]="pan_id_proof" #file4 accept="image/*" (change)="panURL(file4)" />
+				<label for="pan_imageUpload"></label>
+			</div>
+			<div class="avatar-preview">
+				<div id="pan_id_proof" ><!--style="background-image: url(assets/file-upload.png);"-->
+				</div>
+			</div>
+			
+		</div> 
+		
+		</div>
+	
+</div>
+2.css:
+ add link to index.html
+ <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+.avatar-upload {
+  position: relative;
+  max-width: 205px;
+  margin: 50px auto;
+}
+.avatar-upload .avatar-edit {
+  position: absolute;
+  /* right: 12px; */
+  margin:80px; /*venchanges*/
+  z-index: 1;
+  /* top: 10px; */
+}
+.avatar-upload .avatar-edit input {
+  display: none;
+}
+.avatar-upload .avatar-edit input + label {
+  display: inline-block;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 0;
+  border-radius: 100%;
+  background: #ea818b;
+  border: 1px solid transparent;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+  cursor: pointer !important;
+  font-weight: normal;
+  transition: all 0.2s ease-in-out;
+}
+.avatar-upload .avatar-edit input + label:hover {
+  background: #ea818b;
+  border-color: #ea818b;
+}
+.avatar-upload .avatar-edit input + label:after {
+  content: "\f093";
+  font-family: 'FontAwesome';
+  color: #757575;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  margin: auto;
+}
+.avatar-upload .avatar-preview {
+  width: 192px;
+  height: 192px;
+  position: relative;
+  /* border-radius: 100%; */
+  border: 6px solid #F8F8F8;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+}
+.avatar-upload .avatar-preview > div {
+  width: 100%;
+  height: 100%;
+  /* border-radius: 100%; */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+3.ts:
+
+pan_id_proof:any;
+pan_id_proof_myfile: File;
+
+panURL(input) {
+  console.log(input);
+  if (input.files && input.files[0]) {
+    let mimeType = input.files[0].type;
+    let size = input.files[0].size;
+    console.log(size);
+    if(size<5242880) {
+    if (mimeType.match(/image\/*/)==null ) {
+     // alert("not");
+    let msg = 'Only images are supported.';
+    this._LoginService.showAlert(msg,'error');
+    this.pan_id_proof='';
+    return;
+  } else{
+    //alert("not1");
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        console.log(e);
+        let kk:any={};
+        kk=e;
+          $('#pan_id_proof').css('background-image', 'url('+kk.target.result +')');
+          $('#pan_id_proof').hide();
+          $('#pan_id_proof').fadeIn(650);
+      }
+      console.log(input.files.length);
+     // this.fileSelected = input.files.length;
+      reader.readAsDataURL(input.files[0]);
+     //console.log( reader.readAsDataURL(input.files[0]))
+      console.log(input.files[0]);
+      this.pan_id_proof_myfile=input.files[0];
+    }
+  }
+  else{
+    this.pan_id_proof='';
+    this._LoginService.showAlert('File is too big! Image File Size Should be Less than 5MB.','error');
+  }
+  }
+}
+
+apiupload call funtion:
+
+upload(){
+let form_data = new FormData();
+ form_data.append('pan_id_proof', this.pan_id_proof_myfile);
+   console.log(data,status,mycount)
+      this.http.post(this.service.url,form_data)
+      .subscribe(
+        res => {
+          this.spinner.hide();
+          let uploadResponse:any=res[0];
+        },
+        err => {
+          this.spinner.hide();
+          this._LoginService.showAlert('Unable to upload','error');
+        }
+      );
+}
+
+
+2.search select box autocomplete using ngForm:
+  
+  
+  import {MatAutocompleteModule} from '@angular/material/autocomplete';//import app.module
+  
+  1.html:
+  	<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 form-fields form-fields" >
+		
+			  <mat-form-field class="fw-100">
+					<input matInput placeholder="Training Location" required [matAutocomplete]="auto" name="training_loc" #training_loc="ngModel" [(ngModel)]="model.training_loc" [ngClass]="{ 'is-invalid': f.submitted && training_loc.invalid }" (ngModelChange)="doFilter()" >
+				</mat-form-field>
+			
+				<mat-autocomplete #auto="matAutocomplete" (optionSelected)="getcitywisepmtopic($event)">
+					<mat-option *ngFor="let joke of jokes | async" [value]="joke">
+						{{joke}}
+					</mat-option>
+				</mat-autocomplete>
+			  <mat-error *ngIf="f.submitted && training_loc.invalid" class="invalid-feedback">
+					<div *ngIf="training_loc.errors.required">Please Enter Training Location !!!</div>
+				</mat-error> 
+			
+	</div>
+	
+  2.ts:
+  import { catchError, tap, map ,startWith} from 'rxjs/operators';
+  model:any={};
+    doFilter() {
+        this.jokes = this.service.getData()
+          .pipe(map(jokes => this.filter(jokes)),
+          )
+         // console.log(this.model.training_loc);
+      }
+    filter(values) {
+        //console.log(values)
+        return values.filter(joke => joke.toLowerCase().includes(this.model.training_loc))
+      }	  
+	  
+  service.ts:
+    import { Observable,of } from "rxjs";
+    import { tap, startWith, map } from 'rxjs/operators';	
+	loaction:any = [];
+	
+	getData() {
+		var id = "id=1"
+		return this.loaction.length ? of(this.loaction)
+		
+		  : this.http.post<any>(this.url+"api/api_upload/RestController.php?view=get_training_loc",id).pipe(
+			map((data) => {
+			  this.loaction = data;
+			  return this.loaction;
+			})
+		  )
+	 }
+	 getcitywisepmtopic(e){}//if u want call another api
+    
+
+3. data pass between components:
+   	child:
+	import { Router, NavigationExtras } from '@angular/router';
+	import { ActivatedRoute } from '@angular/router';
+	model:any={};
+	constructor(public router: Router, private formbuilder: FormBuilder, public route: ActivatedRoute){}
+	
+		onSubmit() {
+		this.model.username = this.userid;
+		this.model.request = 'filter';
+		console.log(this.model);
+		let reqData: NavigationExtras = {
+			state: this.model
+		}
+		console.log(reqData);
+		this.router.navigate(['/prospect'], reqData);
+	}
+	
+	parent:
+	import { Router,NavigationExtras,ActivatedRoute } from '@angular/router';
+	
+	public navigation:any;
+	constructor(public router: Router,public route: ActivatedRoute){}
+	
+	this.navigation = this.router.getCurrentNavigation();	
+	
+	const state = this.navigation.extras.state;
+		console.log(state);
+		let passdata:any;
+		if(state!=null || state!=undefined){
+			console.log(state);
+			console.log(state);
+			passdata=JSON.stringify(state);
+		}
+	
+	 
