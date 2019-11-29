@@ -1,0 +1,90 @@
+1.	NG FORM WITH PATTERN VALIDATION(AG100010) & MULTI SELECT
+<form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+ //multi select
+ <div  class="col-xs-12 col-sm-6 col-md-2 col-lg-2 form-fields form-fields">
+      <mat-form-field class="fw-100">
+      <mat-label>Select Product</mat-label>
+      <mat-select [disabled]="isdiable" required name="select_product"  #select_product="ngModel" [(ngModel)]='model.select_product' 
+      [ngClass]="{ 'is-invalid': f.submitted && select_product.invalid }"   class='label_data bottom_border_input' multiple>
+          <mat-option [value]="du.product_code_key" *ngFor='let du of productselectlist'>{{du.product_key_value}}</mat-option>
+      </mat-select></mat-form-field>
+     <!-- ff {{select_product}} -->
+      <mat-error *ngIf="f.submitted && select_product.invalid" class="invalid-feedback">
+              <div *ngIf="select_product.errors.required">Please Select Product !!!</div>
+          </mat-error>
+  </div>
+  //pattern
+<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 form-fields">
+				<mat-form-field class="fw-100">
+					<input placeholder="Temporary Intermediary Code" matInput type='text' required pattern="[Aa]{1}[Gg]{1}[0-9]{6}" maxlength="8"
+          name="intermediary_code"  #intermediary_code="ngModel" [(ngModel)]='model.intermediary_code'
+          [ngClass]="{ 'is-invalid': f.submitted && intermediary_code.invalid && (intermediary_code.dirty || intermediary_code.touched) }"
+          class=' label_data bottom_border_input'>
+				
+					<mat-error class="invalid-feedback">
+					<div *ngIf="f.submitted && intermediary_code.invalid">
+						<div *ngIf="intermediary_code.errors.required">Please Enter Temporary Intermediary!!!</div>
+						<!-- <div *ngIf="intermediary_code.errors.pattern">Code format Should be AG100010 !!! </div> -->
+					</div>
+					<div *ngIf="intermediary_code.errors && (intermediary_code.dirty || intermediary_code.touched)">
+							Code format Should be AG100010 !!!
+					</div>
+					</mat-error> 
+				</mat-form-field>
+			</div>
+   <button type="button" class="btn"   class='footer-fixed-btn submit_button paneltext' type='submit'>Submit</button>
+ </form>
+ 
+ 2. SEARCH SELECT BOX AUTOCOMPLETE USING NGFORMS:
+ 
+   import {MatAutocompleteModule} from '@angular/material/autocomplete';//import app.module
+  
+  1.html:
+  	<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 form-fields form-fields" >
+		
+			  <mat-form-field class="fw-100">
+					<input matInput placeholder="Training Location" required [matAutocomplete]="auto" name="training_loc" #training_loc="ngModel" [(ngModel)]="model.training_loc" [ngClass]="{ 'is-invalid': f.submitted && training_loc.invalid }" (ngModelChange)="doFilter()" >
+				</mat-form-field>
+			
+				<mat-autocomplete #auto="matAutocomplete" (optionSelected)="getcitywisepmtopic($event)">
+					<mat-option *ngFor="let joke of jokes | async" [value]="joke">
+						{{joke}}
+					</mat-option>
+				</mat-autocomplete>
+			  <mat-error *ngIf="f.submitted && training_loc.invalid" class="invalid-feedback">
+					<div *ngIf="training_loc.errors.required">Please Enter Training Location !!!</div>
+				</mat-error> 
+			
+	</div>
+	
+  2.ts:
+  import { catchError, tap, map ,startWith} from 'rxjs/operators';
+  model:any={};
+    doFilter() {
+        this.jokes = this.service.getData()
+          .pipe(map(jokes => this.filter(jokes)),
+          )
+         // console.log(this.model.training_loc);
+      }
+    filter(values) {
+        //console.log(values)
+        return values.filter(joke => joke.toLowerCase().includes(this.model.training_loc))
+      }	  
+	  
+  service.ts:
+    import { Observable,of } from "rxjs";
+    import { tap, startWith, map } from 'rxjs/operators';	
+	loaction:any = [];
+	
+	getData() {
+		var id = "id=1"
+		return this.loaction.length ? of(this.loaction)
+		
+		  : this.http.post<any>(this.url+"api/api_upload/RestController.php?view=get_training_loc",id).pipe(
+			map((data) => {
+			  this.loaction = data;
+			  return this.loaction;
+			})
+		  )
+	 }
+	 getcitywisepmtopic(e){}//if u want call another api
