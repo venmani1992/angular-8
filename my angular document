@@ -28,3 +28,13 @@
     
 8.gridster in angular project:
     https://github.com/tiberiuzuld/angular-gridster2
+
+9.disable web security:
+  "C:\Users\venmani\Desktop\GoogleChromePortable\GoogleChromePortable\GoogleChromePortable.exe" --args --disable-web-security
+  
+10.file upload and crop
+    https://github.com/pqina/filepond(file upload and crop)  
+    
+11.File upload pdf preview:
+   https://stackoverflow.com/questions/55176708/preview-pdf-image-file-before-upload
+    
