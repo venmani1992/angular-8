@@ -1,5 +1,6 @@
 
-Image uplaod and preview:
+1.IMAGE UPLOAD AND PREVIEW:
+
 1.html:
 <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 form-fields form-fields">
 	<mat-label>Pan ID Proof</mat-label>
@@ -148,7 +149,8 @@ let form_data = new FormData();
 }
 
 
-2.search select box autocomplete using ngForm:
+
+ 2.SEARCH SELECT BOX AUTOCOMPLETE USING NGFORM 
   
   
   import {MatAutocompleteModule} from '@angular/material/autocomplete';//import app.module
@@ -204,8 +206,10 @@ let form_data = new FormData();
 	 getcitywisepmtopic(e){}//if u want call another api
     
 
-3. data pass between components:
-   	child:
+ 
+ 3.DATA PASS BETWEEN COMPONENTS(ANGULAR 7 NavigationExtras):
+ 
+   1.child:
 	import { Router, NavigationExtras } from '@angular/router';
 	import { ActivatedRoute } from '@angular/router';
 	model:any={};
@@ -222,7 +226,7 @@ let form_data = new FormData();
 		this.router.navigate(['/prospect'], reqData);
 	}
 	
-	parent:
+  2.parent:
 	import { Router,NavigationExtras,ActivatedRoute } from '@angular/router';
 	
 	public navigation:any;
@@ -240,3 +244,48 @@ let form_data = new FormData();
 		}
 	
 	 
+
+4.MODEL POPUP:
+	
+    import { MatDialog } from '@angular/material/dialog';
+    import { DatePipe } from '@angular/common';
+	
+   @Component({
+    selector: 'app-dar-homepage',
+    templateUrl: './dar-homepage.component.html',
+    styleUrls: ['./dar-homepage.component.css']
+   })
+   export class DarHomepageComponent implements OnInit {
+      constructor(public dialog: MatDialog) {}
+	
+		darFilterModal() {
+			const dialogRef = this.dialog.open(DarfilterModal, {
+				panelClass: 'right'
+			});
+			dialogRef.afterClosed().subscribe(result => {
+				console.log(result);
+		 });
+	 }
+	 }
+	 
+     @Component({
+	selector: 'dar-filter-modal',
+	templateUrl: 'dar-filter-modal.html',
+	styleUrls: ['dar-filter-modal.css']
+       })
+	 export class DarfilterModal implements OnInit {
+	 public userid ='';
+	 constructor( public dialogRef: MatDialogRef<DarHomepageComponent>,public datepipe: DatePipe){}
+	 onSubmit(){
+			// const dialogConfig = new MatDialogConfig();
+			// dialogConfig.data = "some data";
+			// let dialogRef = this.dialog.open(DarHomepageComponent, dialogConfig);
+			this.model.username= this._LoginService.userName;
+			this.model.role_id = this._LoginService.role;
+			this.model.request= 'dar_record';
+			this.model.fromdate = this.datepipe.transform(this.model.fromdate, 'yyyy-MM-dd');
+			this.model.todate = this.datepipe.transform(this.model.todate, 'yyyy-MM-dd');
+			this.dialogRef.close(this.model);
+			//console.log(this.model);
+		}
+	 }
