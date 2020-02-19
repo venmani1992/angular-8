@@ -9489,6 +9489,8 @@ var FlateStream = (function() {
 		link.click();
 
 	}
+	
+https://stackoverflow.com/questions/39915146/how-to-convert-a-html-table-to-pdf
 
       exportGridprospectpdf(table, name, filename) {
 		let f_date = new Date();
