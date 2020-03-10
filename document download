@@ -1,3 +1,41 @@
+ best way to angular html to pdf download:
+  https://www.npmjs.com/package/jspdf-autotable
+  
+ other documents:
+  https://www.npmjs.com/package/ngx-export-as or use before latest version.
+ 
+ <table style="width:60%;font-size: 12px" class="table table-hover" id="pdfTable" #pdfTable>
+        <thead>
+          <tr style="background:grey">
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Firstname1</th>
+            <th>Lastname1</th>
+            <th>Email1</th>
+            <th>Firstname1</th>
+            <th>Lastname1</th>
+            <th>Email1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>John</td>
+            <td>Doe</td>
+            <td>john@example.com</td>
+            <td>John</td>
+            <td>Doe</td>
+            <td>john@example.com</td>
+            <td>John</td>
+            <td>Doe</td>
+            <td>john@example.com</td>
+          </tr>
+          <tr>
+	  </tbody>
+	  </table>
+<div> <button  (click)="downloadAsPDF()">Export To PDF</button></div>	 
+
+ 
  using angular pdf download:(https://stackoverflow.com/questions/56961732/how-do-i-convert-with-angular-html-into-pdf)
  1.npm i jspdf@1.4.1 --save
  2.npm install html2canvas --save
